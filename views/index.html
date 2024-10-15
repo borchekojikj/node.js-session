@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Info Page</title>
+
+    <!-- BOOTSTRAP CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
+    <!-- BOOTSTRAP ICONS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css" />
+
+    <style>
+        body {
+            background-color: #e9ecef; /* Soft background color */
+            font-family: 'Roboto', sans-serif; /* Modern font */
+        }
+        h1, h2 {
+            color: #343a40;
+        }
+        h2 {
+            border-bottom: 2px solid #007bff; /* Underline for section headers */
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        section {
+            margin-top: 30px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Slightly darker shadow */
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow: auto;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for code blocks */
+        }
+        .list-group-item {
+            background-color: #f8f9fa;
+            border: none; /* Remove borders for a cleaner look */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+        .list-group-item:hover {
+            background-color: #e2e6ea; /* Lighten on hover */
+        }
+        .container {
+            max-width: 1000px; /* Max width for better readability */
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #73b2f5;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .button-container {
+          width: 1000px;
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+        }
+    </style>
+</head>
+<body>
+  <div class="container-fluid">
+  <div class="row justify-content-center">
+    <h1 class="text-center mb-4 mt-4 col-12">Info Page</h1>
+    <div class="button-container col-12">
+
+      <button class="btn btn-dark col-5" id="session">Session</button>
+      <button class="btn btn-dark col-5" id="passport">Passport</button>
+    </div>
+  </div>
+    <div class="container  mb-5 session-con">
+    
+
+        <section class="border p-4">
+            <h2 class="mb-3">Session Middleware</h2>
+            <p>
+                <pre>
+<code>
+app.use(
+  session({
+    secret: "TOPSECRETWORD", // You can use what you want!
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+);
+</code>
+                </pre>
+            </p>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <strong>Options Explained:</strong>
+                    <ol>
+                        <li>
+                            <strong>secret: "TOPSECRETWORD"</strong>
+                            <ul>
+                                <li>The secret is a string used to sign and encrypt the session ID cookie that is sent to the client. This ensures that the session data is secure.</li>
+                                <li>Important: This string should be kept secret and should not be hardcoded in production like this. You typically store it in environment variables.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>resave: false</strong>
+                            <ul>
+                                <li>The resave option tells the session middleware whether to save the session back to the session store (like a database) even if it hasn't been modified during the request.</li>
+                                <li>false means the session won't be saved to the session store if it hasn't changed. This can reduce unnecessary operations.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>saveUninitialized: true</strong>
+                            <ul>
+                                <li>This option controls whether a session that is new but not modified should be saved to the session store.</li>
+                                <li>true means that even if you don't modify the session, it will still be stored. This can be useful for logging or tracking purposes, but in many cases, you might want to set this to false to avoid storing empty sessions.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <strong>cookie: { maxAge: 1000 * 60 * 60 * 24 }</strong>
+                            <ul>
+                                <li>This option sets the cookie options for the session ID.</li>
+                                <li>maxAge: 1000 * 60 * 60 * 24 sets the expiration time of the session cookie to 24 hours (in milliseconds). After 24 hours, the cookie will expire and the session will no longer be valid.</li>
+                                <li>The maxAge value is calculated as 1000 milliseconds (1 second) * 60 (1 minute) * 60 (1 hour) * 24 (1 day).</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Problem: Session Data Lost on Server Reset</h2>
+
+            <h3 class="mt-3 mb-4">What's Happening:</h3>
+            
+            <h5>1. In-memory Session Storage:</h5>
+            <ul>
+                <li>
+                    By default, <code>express-session</code> stores sessions in memory (RAM), which means the session data only persists as long as the server is running.
+                </li>
+                <li>
+                    When you restart the server, all the in-memory data (including the sessions) is wiped out. This is why when you try to access the session data after restarting the server, it says "No session data found"—because the session data is no longer available.
+                </li>
+            </ul>
+        
+            <h5>2. Session Cookie:</h5>
+            <ul>
+                <li>
+                    Your browser still has the session cookie (e.g., <code>connect.sid</code>), but after the server restart, the server doesn't recognize that session ID anymore because the corresponding session data was stored in memory and has been lost.
+                </li>
+                <li>
+                    When the server can't find the session data associated with that session ID, it treats it as if there is no session.
+                </li>
+            </ul>
+
+            <h5>Solution: Using a Persistent Session Store</h5>
+            <ul>
+                <li>
+                    To solve this, you need to use a persistent session store like Redis, MongoDB, or MySQL that can store session data across server restarts.
+                </li>
+                <li>
+                    This way, session data is not lost when the server is restarted.
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <!-- <h2>Understanding Session Management in Express</h2> -->
+
+            <h2 class="mt-3 mb-4">Problem: How Does the Browser Automatically Send Cookies with the Session Token?</h2>
+            <p>When you make a request to a web server, the browser automatically manages cookies, including session cookies, allowing the server to identify the client and maintain session state across multiple requests. Here's a breakdown of how this process works:</p>
+        
+            <h5>1. Setting Cookies</h5>
+            <p>When a session is created (e.g., when you visit the <code>/set-session</code> endpoint in your Express app), the server generates a session identifier (session ID) and sends it to the client's browser as a cookie. The following steps occur:</p>
+            <ul>
+                <li>
+                    The server responds to the client with an HTTP response that includes a <code>Set-Cookie</code> header.
+                </li>
+                <li>
+                    This header tells the browser to store the cookie, which contains the session ID and any other relevant information (like expiration time, domain, etc.).
+                </li>
+            </ul>
+            <p>For example, the server might send a response like this:</p>
+            <pre><code>Set-Cookie: connect.sid=s%3Aabcdef123456; Path=/; HttpOnly; Max-Age=86400</code></pre>
+            <p>In this case:</p>
+            <ul>
+                <li><code>connect.sid</code> is the name of the cookie.</li>
+                <li><code>s%3Aabcdef123456</code> is the value of the cookie (the encoded session ID).</li>
+                <li><code>Path=/</code> specifies that the cookie is valid for the entire site.</li>
+                <li><code>HttpOnly</code> means that the cookie can't be accessed via JavaScript (for security purposes).</li>
+                <li><code>Max-Age=86400</code> sets the expiration time to 24 hours (in seconds).</li>
+            </ul>
+        
+            <h5>2. Sending Cookies with Requests</h5>
+            <p>Once the cookie is set, the browser automatically includes it in future requests to the same server for the duration of its validity. Here's how that works:</p>
+            <ul>
+                <li>When the user makes subsequent requests (e.g., navigating to different pages), the browser checks if there are any cookies that match the domain of the request.</li>
+                <li>If it finds any, it automatically includes them in the <code>Cookie</code> header of the HTTP request.</li>
+                <li>This allows the server to retrieve the session ID from the cookie and access the associated session data stored on the server or in a session store.</li>
+            </ul>
+            <p>For example, the browser might send a request with a header like this:</p>
+            <pre><code>Cookie: connect.sid=s%3Aabcdef123456</code></pre>
+        
+            <h5>3. Maintaining Session State</h5>
+            <p>With the session ID included in the request, the server can now identify the user and maintain their session state across different requests, allowing for a consistent experience (e.g., keeping the user logged in, preserving their preferences, etc.).</p>
+        </section>
+    </div>
+
+    <div class="container mt-3 mb-5 passport-con d-none">
+
+      <section class="border p-4">
+          <h2 class="mb-3">Passport and Authentication</h2> 
+          <p>These lines are part of integrating Passport.js with Express to handle user authentication:</p>
+          <p>
+              <pre>
+                <code>
+                    app.use(passport.initialize());
+                    app.use(passport.session());
+                </code>
+              </pre>
+          </p>
+          <ol>
+            <li>
+                <strong>Passport Initialize:</strong>
+                <ul>
+                    <li>This middleware is required to initialize Passport. It sets up Passport in your application and prepares it to handle authentication.</li>
+                    <li>Without this, Passport won’t work, as it wouldn’t be able to process authentication requests, login attempts, or interact with any configured strategies (e.g., Google, Facebook, local strategy).</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Passport Session:</strong>
+                <ul>
+                    <li>This middleware is used to persist login sessions across requests. Passport will serialize and deserialize user information from the session, enabling the user's session to persist even after the user navigates between pages or refreshes the browser.</li>
+                    <li>It’s specifically used when your application uses sessions to track authenticated users. For example, if a user logs in and you store their information in the session, this middleware will help retrieve their authentication status in subsequent requests.</li>
+                </ul>
+            </li>
+        </ol>
+        <p>
+            In short, <code>passport.initialize()</code> starts the Passport framework, and <code>passport.session()</code> manages persistent login sessions. This way, once a user is authenticated, they don't need to re-authenticate on each request.
+        </p>
+      </section>
+
+      <section>
+        <h2>Why Use passport.session() with express-session?</h2>
+    
+        <h3 class="mt-3 mb-4">Overview:</h3>
+        
+        <h5>1. express-session Alone:</h5>
+        <ul>
+            <li>
+                <code>express-session</code> manages raw session data (like storing <code>req.session.username</code>).
+                <ul>
+                    <li>It handles general-purpose session storage and persists across requests using session cookies.</li>
+                </ul>
+            </li>
+        </ul>
+    
+        <h5>2. passport.session() with express-session:</h5>
+        <ul>
+            <li>
+                <strong>Adds User Authentication Management:</strong> This includes:
+                <ul>
+                    <li>
+                        <strong>Serializing User Data:</strong> When a user logs in, Passport saves only a user identifier (like <code>user.id</code>) into the session. This keeps the session lightweight.
+                    </li>
+                    <li>
+                        <strong>Deserializing User Data:</strong> On subsequent requests, <code>passport.session()</code> retrieves the user's full details from the session based on the serialized user ID. It ensures that user authentication information persists across requests.
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    
+        <h5>Conclusion:</h5>
+        <ul>
+            <li>
+                <code>passport.session()</code> is critical when you're using Passport to authenticate users. 
+            </li>
+            <li>
+                It leverages <code>express-session</code> to maintain user authentication state without needing the user to log in again for each request.
+            </li>
+            <li>
+                The process of serialization and deserialization is how Passport securely handles user authentication data.
+            </li>
+        </ul>
+    </section>
+    
+
+    <section>
+      <h2>Managing User Sessions with serializeUser and deserializeUser</h2>
+  
+      <p>In Passport.js, the <code>serializeUser</code> and <code>deserializeUser</code> functions are essential for managing user sessions when using session-based authentication. They are required if you're using Passport with session support (such as in combination with <code>express-session</code>). You can skip them only if you're using Passport in a session-less mode (i.e., using tokens like JWT).</p>
+  
+      <h3>Why You Need Them:</h3>
+      
+      <h5>1. serializeUser:</h5>
+      <ul>
+          <li>
+              This function determines which data from the user object should be stored in the session. It is typically the user ID.
+          </li>
+          <li>
+              Passport only stores the user's identifier (e.g., <code>user.id</code>) in the session, not the whole user object.
+          </li>
+          <li>
+              The user object is then "serialized" (i.e., reduced) into the session to save space.
+          </li>
+      </ul>
+      <p>Example:</p>
+      <pre>
+  <code>
+  passport.serializeUser((user, done) => {
+      done(null, user.id); // Store the user ID in the session
+  });
+  </code>
+      </pre>
+  
+      <h5>2. deserializeUser:</h5>
+      <ul>
+          <li>
+              This function retrieves the full user object from the session data. When a request is made, Passport uses the user ID stored in the session to fetch the user object (typically from the database).
+          </li>
+          <li>
+              This "deserialization" happens for every subsequent request that the authenticated user makes, ensuring you have access to the full user data for authorization.
+          </li>
+      </ul>
+      <p>Example:</p>
+      <pre>
+  <code>
+  passport.deserializeUser((id, done) => {
+      User.findById(id, (err, user) => {
+          done(err, user); // Retrieve the full user object from the database
+      });
+  });
+  </code>
+      </pre>
+  
+      <h3>Consequences of Skipping serializeUser and deserializeUser:</h3>
+      <ul>
+          <li>
+              Without them, Passport won't know how to store and retrieve users from the session, resulting in authentication not persisting across requests.
+          </li>
+          <li>
+              You might encounter errors like <strong>Failed to serialize user into session</strong> because Passport needs these methods to handle session management.
+          </li>
+      </ul>
+  
+      <h3>Can You Skip Them Entirely?</h3>
+      <ul>
+          <li>
+              Yes, but only if you're using stateless authentication methods, like JWT (JSON Web Tokens). In that case, you don't need session management, and you would handle authentication tokens directly in your API routes or front-end.
+          </li>
+          <li>
+              For example, with JWT, you might not even use <code>passport.session()</code> or <code>express-session</code>, and Passport would not need to serialize or deserialize users.
+          </li>
+      </ul>
+  
+      <h3>When to Use:</h3>
+      <ul>
+          <li>
+              Use <code>serializeUser</code> and <code>deserializeUser</code>: When you're using Passport with sessions (like in traditional login systems where the session is stored in cookies).
+          </li>
+          <li>
+              Skip them: When using a stateless authentication mechanism like JWT, where sessions aren't stored, and you verify users through tokens instead.
+          </li>
+      </ul>
+  
+      <h3>Summary:</h3>
+      <ul>
+          <li>
+              If you're using session-based authentication, you need to implement <code>serializeUser</code> and <code>deserializeUser</code> so that Passport can manage sessions.
+          </li>
+          <li>
+              If you're going for stateless authentication like JWT, you can skip them because no session storage is required.
+          </li>
+      </ul>
+  </section>
+  
+  <section>
+    <h2>Implementing Local Authentication with Passport.js</h2>
+
+    <h3 class="mt-3 mb-4">Overview:</h3>
+    <p>The <code>LocalStrategy</code> in Passport.js is used for username and password authentication. It allows you to authenticate users based on credentials stored in your database.</p>
+
+    <h3>Code Explanation:</h3>
+    <pre>
+<code>
+passport.use(
+    new LocalStrategy(async function verify(username, password, cb) {
+        try {
+            const result = await db.query("SELECT * FROM users WHERE email = $1", [username]);
+            
+            // Guard if the user is not found
+            if (!result.rows.length > 0) return cb("User not found!");
+
+            const user = result.rows[0];
+            const storedHashedPassword = user.password;
+
+            // Check if the password is correct
+            bcrypt.compare(password, storedHashedPassword, (err, result) => {
+                if (err) return cb(err);
+
+                // Guard for result; if no match, return cb
+                if (!result) return cb(null, false);
+
+                // If everything is okay, return no error and the user
+                return cb(null, user);
+            });
+        } catch (err) {
+            return cb(err);
+        }
+    })
+);
+</code>
+    </pre>
+
+    <h3>Detailed Breakdown:</h3>
+
+    <h5>1. Setting Up the Strategy:</h5>
+    <ul>
+        <li>
+            The <code>passport.use()</code> method registers the strategy. 
+            <code>new LocalStrategy()</code> initializes a new local authentication strategy.
+        </li>
+    </ul>
+
+    <h5>2. Asynchronous Verification Function:</h5>
+    <ul>
+        <li>
+            The function takes <code>username</code>, <code>password</code>, and a callback function <code>cb</code> as parameters.
+        </li>
+        <li>
+            This function is asynchronous and performs database operations to verify the user.
+        </li>
+    </ul>
+
+    <h5>3. Database Query:</h5>
+    <ul>
+        <li>
+            <code>await db.query("SELECT * FROM users WHERE email = $1", [username]);</code>
+            This line queries the database to find a user with the provided email (username).
+        </li>
+        <li>
+            If the user is not found, it returns an error message through the callback: <code>cb("User not found!")</code>.
+        </li>
+    </ul>
+
+    <h5>4. Password Verification:</h5>
+    <ul>
+        <li>
+            The stored hashed password is retrieved from the database: <code>const storedHashedPassword = user.password;</code>.
+        </li>
+        <li>
+            <code>bcrypt.compare(password, storedHashedPassword, (err, result) => {...});</code>
+            This function compares the provided password with the stored hashed password.
+        </li>
+        <li>
+            If there is an error during comparison, it calls <code>cb(err)</code>.
+        </li>
+        <li>
+            If the passwords do not match, it returns <code>cb(null, false)</code>, indicating authentication failed.
+        </li>
+        <li>
+            If the passwords match, it calls <code>cb(null, user)</code>, passing the user object for further processing.
+        </li>
+    </ul>
+
+    <h5>5. Error Handling:</h5>
+    <ul>
+        <li>
+            The <code>try/catch</code> block ensures that any errors during the database query are caught and passed to the callback: <code>return cb(err)</code>.
+        </li>
+    </ul>
+
+    <h3>Conclusion:</h3>
+    <p>The LocalStrategy is a fundamental way to authenticate users in applications using Passport.js. It handles user verification, password comparison, and error handling to ensure a secure authentication process.</p>
+</section>
+
+  </div>
+</div>
+  <script>
+
+const sessionBtn = document.querySelector("#session");
+const passportBtn = document.querySelector("#passport");
+
+const sessionCon = document.querySelector(".session-con");
+const passportCon = document.querySelector(".passport-con");
+
+// Initial state
+sessionCon.style.display = 'block';
+passportCon.classList.add('d-none');
+
+sessionBtn.addEventListener('click', () => {
+  sessionCon.style.display = 'block';
+  passportCon.classList.add('d-none');
+});
+
+passportBtn.addEventListener('click', () => {
+  sessionCon.style.display = 'none';
+  passportCon.classList.remove('d-none');
+});
+  </script>
+</body>
+</html>
